@@ -27,7 +27,11 @@ const Login = () => {
       .then(result => {
         const user = result.user;
         console.log(user)
-        setSucessMessage('Sucessfully Login!')
+        if(user.emailVerified === true){
+          setSucessMessage('Sucessfully Login!')
+        }else{
+          alert('Please Verify Your Email')
+        }
       })
       .catch(error => {
         console.error("error from: ", error)
@@ -49,21 +53,20 @@ const Login = () => {
     if (!email) {
       setErrorMessage('Please type a your Email Address!')
       return;
-    }else if(!emailRegex.test(email)){
+    } else if (!emailRegex.test(email)) {
       setErrorMessage("Please Type a Valid Email Address")
       return;
     }
 
 
     sendPasswordResetEmail(auth, email)
-    .then(result => {
-      console.log(result)
-      setSucessMessage('Password reset email sent!');
-    })
-    .catch(error=> {
-      console.error(error)
-      setErrorMessage('Password Reset Email not sent!')
-    })
+      .then(() => {
+        setSucessMessage('Password reset email sent!');
+      })
+      .catch(error => {
+        console.error(error)
+        setErrorMessage('Password Reset Email not sent!')
+      })
 
   }
 

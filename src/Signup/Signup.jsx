@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
 import auth from "../components/Firebase Auth/firebaseAuth.init";
 import { useState } from "react";
 
@@ -9,10 +9,12 @@ const Signup = () => {
 
     const handleLogIn = (e) => {
         e.preventDefault();
+        const fullName = e.target.name.value;
         const email = e.target.email.value;
         const password = e.target.password.value;
         const accetpTerms = e.target.terms.checked;
 
+        console.log(fullName)
         setDisplaySucess('')
         setDisplayError('')
 
@@ -29,7 +31,7 @@ const Signup = () => {
         } else if (!regexTwo.test(password)) {
             setDisplayError("Please Type a one Number!");
             return;
-        }else if(accetpTerms !== true){
+        } else if (accetpTerms !== true) {
             setDisplayError("Please Accept Our Terms and Condition");
             return;
         }
@@ -39,6 +41,21 @@ const Signup = () => {
                 const user = userCredential.user;
                 console.log(user)
                 setDisplaySucess("Sucessfully Submited!")
+
+                //Update Profile
+                updateProfile(user, {
+                    displayName: fullName,
+                    photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKdUDNDpk2RxF0u4xNY9VqU4FGZcqwylM2V6kd28cTBp3lDrq0m=s96-c-rg-br100'
+                })
+                .then(()=> console.log('Profile Updated'))
+                .catch((error)=> console.error(error) )
+
+                // Email send for Verification
+                sendEmailVerification(userCredential.user)
+                    .then(() => {
+                        alert('Email verification sent!')
+                    })
+
             })
             .catch(error => {
                 const errorMessgae = error.message;
@@ -62,6 +79,19 @@ const Signup = () => {
                     <div className="p-8 rounded-2xl bg-white shadow">
                         <h2 className="text-gray-800 text-center text-2xl font-bold">Sign Up</h2>
                         <form onSubmit={handleLogIn} className="mt-8 space-y-4">
+                            <div>
+                                <label className="text-gray-800 text-sm mb-2 block">Your Name</label>
+                                <div className="relative flex items-center">
+                                    <input name="name" type="name" required className="w-full text-gray-800 text-sm border border-gray-300 px-4 py-3 rounded-md outline-blue-600" placeholder="Your Full Name" />
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="50px" viewBox="0 -960 960 960" width="50px" fill="#bbb" stroke="#bbb" className="w-4 h-4 absolute right-4"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Zm0 400Z" /></svg>
+
+                                    {/*   <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke="#bbb" className="w-4 h-4 absolute right-4" viewBox="0 0 24 24">
+                                        <circle cx="10" cy="7" r="6" data-original="#000000"></circle>
+                                        <path d="M14 15H6a5 5 0 0 0-5 5 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 5 5 0 0 0-5-5zm8-4h-2.59l.3-.29a1 1 0 0 0-1.42-1.42l-2 2a1 1 0 0 0 0 1.42l2 2a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42l-.3-.29H22a1 1 0 0 0 0-2z" data-original="#000000"></path>
+                                    </svg> */}
+                                </div>
+                            </div>
                             <div>
                                 <label className="text-gray-800 text-sm mb-2 block">Email Address</label>
                                 <div className="relative flex items-center">
